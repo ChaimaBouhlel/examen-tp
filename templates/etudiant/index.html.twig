@@ -2,12 +2,15 @@
 {% block pageTitle %}
     Etudiants
 {% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('styles/styles.css') }}">
+{% endblock %}
 {% block title %}
 liste des etudiants
 {% endblock %}
 {% block body %}
     <a href="{{ path('etudiant.edit') }}">Ajouter un étudiant:</a>
-    <table class="table">
+    <table class="table" id="table-etudiant">
         <tr class="table-active">
             <th>Firstname</th>
             <th>Name</th>
@@ -15,7 +18,7 @@ liste des etudiants
             <th>Action</th>
         </tr>
         {% for etudiant in etudiants %}
-            <tr class="table-{% if loop.index is odd %}danger{% else %}warning{% endif %}">
+            <tr onclick="highlight()" class="table-{% if loop.index is odd %}danger{% else %}warning{% endif %}">
                 <td>{{ etudiant.firstname | capitalize }}</td>
                 <td>{{ etudiant.name | capitalize }}</td>
                 <td>{% if etudiant.setion %}{{ etudiant.setion.designation }}{% else %} pas encore{% endif %}</td>
@@ -26,4 +29,7 @@ liste des etudiants
             </tr>
         {% endfor %}
     </table>
+{% endblock %}
+{% block javascripts %}
+    <script src="{{ asset('js/script.js') }}"> </script>
 {% endblock %}
