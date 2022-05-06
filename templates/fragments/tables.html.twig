@@ -1,0 +1,16 @@
+<table class="table">
+    <tr class="table-active">
+        <th>Firstname</th>
+        <th>Name</th>
+        <th>Age</th>
+        <th>Message</th>
+    </tr>
+    {% for user in users %}
+        <tr class="table-{% if loop.index is odd %}danger{% else %}warning{% endif %}">
+            <td>{{ user.firstname | capitalize }}</td>
+            <td>{{ user.name | capitalize }}</td>
+            <td>{{ user.age |capitalize }}</td>
+            <td>{{ render(controller('App\\Controller\\FirstController::passerMessage', {name: user.firstname})) }}</td>
+        </tr>
+    {% endfor %}
+</table>
