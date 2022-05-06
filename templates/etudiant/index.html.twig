@@ -6,17 +6,23 @@
 liste des etudiants
 {% endblock %}
 {% block body %}
+    <a href="{{ path('etudiant.edit') }}">Ajouter un étudiant:</a>
     <table class="table">
         <tr class="table-active">
             <th>Firstname</th>
             <th>Name</th>
             <th>Section</th>
+            <th>Action</th>
         </tr>
         {% for etudiant in etudiants %}
             <tr class="table-{% if loop.index is odd %}danger{% else %}warning{% endif %}">
                 <td>{{ etudiant.firstname | capitalize }}</td>
                 <td>{{ etudiant.name | capitalize }}</td>
-                <td>{% if etudiant.section %}{{etudiant.section }}{% else %}Etudiant pas encore affecté{% endif %}</td>
+                <td>{% if etudiant.setion %}{{ etudiant.setion.designation }}{% else %} pas encore{% endif %}</td>
+                <td>
+                    <a href="{{ path('etudiant.edit',{id : etudiant.id}) }}">edit</a>
+                    <a href="{{ path('etudiant.delete',{id : etudiant.id}) }}">delete</a>
+                </td>
             </tr>
         {% endfor %}
     </table>

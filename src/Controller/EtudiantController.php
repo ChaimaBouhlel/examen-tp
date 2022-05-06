@@ -4,8 +4,10 @@ namespace App\Controller;
 
 use App\Entity\Etudiant;
 use App\Entity\Section;
+use App\Form\EtudiantType;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -22,21 +24,52 @@ class EtudiantController extends AbstractController
             'etudiants' => $etudiants,
         ]);
     }
-    #[Route('/add/{name}/{firstname}/{sectionName}', name: 'etudiant.add')]
-    public function addEtudiant(ManagerRegistry $doctrine, $name, $firstname,$sectionName): Response
+    #[Route('/edit/{id?0}', name: 'etudiant.edit')]
+    public function addEtudiant(ManagerRegistry $doctrine, Etudiant $etudiant = null, Request $request): Response
     {
-        $manager = $doctrine->getManager();
-        $etudiant = new Etudiant();
-        $section = new Section();
-        $section->setDesignation($sectionName);
-        $manager->persist($section);
-        $etudiant->setFirstname($firstname);
-        $etudiant->setName($name);
-        $etudiant->setSetion($section);
-        $manager->persist($etudiant);
-        $manager->flush();
-        $this->addFlash('success','Etudiant ajouté!');
-        return $this->redirectToRoute('etudiant');
+        $new = false;
+
+        if (!$etudiant){
+            $etudiant = new Etudiant();
+            $new = true;
+        }
+        $form = $this->createForm(EtudiantType::class, $etudiant);
+
+        $form->handleRequest($request);
+
+        if($form->isSubmitted()){
+            $entityManager = $doctrine->getManager();
+            $entityManager->persist($etudiant);
+            $entityManager->flush();
+
+            if ($new){
+                $message =" a été ajoutée avec succès";
+            }else{
+                $message =" a été mise à jour avec succès";
+            }
+
+            $this->addFlash('success', $etudiant->getName(). $message);
+            return $this->redirectToRoute('etudiant');
+        }else{
+            return $this->render('etudiant/add-etudiant.html.twig', [
+                'form' => $form->createView()
+            ]);
+        }
     }
+
+#[Route('/delete/{id}', name: 'etudiant.delete')]
+public function removeEtudiant(ManagerRegistry $doctrine, Etudiant $etudiant = null):Response
+{
+    if($etudiant){
+        $manager = $doctrine->getManager();
+        $manager->remove($etudiant);
+        $manager->flush();
+        $this->addFlash('success', ' Etudiant supprimé avec succès');
+    }else{
+        $this->addFlash('error', "L'étudiant n'existe pas");
+    }
+    return $this->redirectToRoute("etudiant");
+
+}
 
 }
